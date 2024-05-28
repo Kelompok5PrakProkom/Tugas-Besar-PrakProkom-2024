@@ -1,0 +1,125 @@
+import customtkinter as ctk
+from docx import Document
+
+# Buat antarmuka CustomTkinter
+root = ctk.CTk()
+root.title("Invoice Sederhana")
+
+# Daftar tanggal dan jam yang sudah dibooking
+data_booking = {
+    "2024-05-20": ["10:00", "12:00"],
+    "2024-05-21": ["14:00", "16:00"],
+}
+
+# ... (kode antarmuka CustomTkinter lainnya seperti di atas)
+
+# Fungsi untuk mengecek apakah tanggal dan jam sudah dibooking
+def is_booked(tanggal, jam):
+    return tanggal in data_booking and jam in data_booking[tanggal]
+
+# Fungsi untuk menonaktifkan tanggal dan jam yang sudah dibooking
+def disable_booked_options():
+    # Mendapatkan tanggal dan jam yang dipilih
+    tanggal_dipilih = entri_tanggal_pemesanan.get()
+    jam_dipilih = entri_jam_pemesanan.get()
+    # Fungsi untuk mendapatkan daftar tanggal yang tersedia
+def get_available_dates():
+    available_dates = []
+    for date in data_booking:
+        if date not in data_booking:
+            available_dates.append(date)
+    return available_dates
+
+# Fungsi untuk mendapatkan daftar jam yang tersedia pada tanggal tertentu
+def get_available_hours(date):
+    available_hours = []
+    if date in data_booking:
+        for hour in data_booking[date]:
+            if hour not in data_booking[date]:
+                available_hours.append(hour)
+    return available_hours
+
+# Create combobox_fasilitas
+combobox_fasilitas = ctk.CTkComboBox(root, values=["Ruang Seminar", "Ruang MultiMedia", "Working Space", "Lapangan"])
+combobox_fasilitas.grid(row=1, column=1, padx=10, pady=10)
+
+# Fungsi untuk memperbarui opsi combobox tanggal dan jam
+def update_options():
+    # Mendapatkan daftar tanggal dan jam yang tersedia
+    available_dates = get_available_dates()
+    available_hours = get_available_hours(entri_tanggal_pemesanan.get())
+
+    # Mengosongkan opsi combobox
+    combobox_fasilitas.delete(0, ctk.END)
+    entri_tanggal_pemesanan.delete(0, ctk.END)
+    entri_jam_pemesanan.delete(0, ctk.END)
+
+    # Menambahkan opsi yang tersedia
+    for date in available_dates:
+        combobox_fasilitas.insert(0, date)
+    for hour in available_hours:
+        entri_tanggal_pemesanan.insert(0, hour)
+
+    # Memicu fungsi update_options() saat program dimulai
+    update_options()
+# Functions for managing booking options
+def is_booked(tanggal, jam):
+    def disable_booked_options():
+        combobox_fasilitas.config(state="disabled")  # Correct indentation
+
+
+# Menambahkan event pada combobox dan entri tanggal/jam
+combobox_fasilitas.bind("<<ComboboxSelected>>", disable_booked_options)
+entri_tanggal_pemesanan.bind("<KeyRelease>", disable_booked_options)
+entri_jam_pemesanan.bind("<KeyRelease>", disable_booked_options)
+
+
+    # Menonaktifkan opsi combobox tanggal dan jam
+combobox_fasilitas.config(state="disabled")
+entri_tanggal_pemesanan.config(state="disabled")
+entri_jam_pemesanan.config(state="disabled")
+
+    # Mengaktifkan kembali opsi yang tidak dibooking
+if not is_booked(tanggal_dipilih, jam_dipilih):
+    combobox_fasilitas.config(state="normal")
+    entri_tanggal_pemesanan.config(state="normal")
+    entri_jam_pemesanan.config(state="normal")
+
+
+# Tambahkan bidang informasi pelanggan
+label_nama = ctk.CTkLabel(root, text="Nama:")
+entri_nama = ctk.CTkEntry(root)
+label_fasilitas = ctk.CTkLabel(root, text="Fasilitas yang Dipilih:")
+combobox_fasilitas = ctk.CTkComboBox(root, values=["Ruang Seminar", "Ruang MultiMedia", "Working Space","Lapangan"])
+label_tanggal_pemesanan = ctk.CTkLabel(root, text="Tanggal Pemesanan:")
+entri_tanggal_pemesanan = ctk.CTkEntry(root)
+label_jam_pemesanan = ctk.CTkLabel(root, text="Jam Pemesanan:")
+entri_jam_pemesanan = ctk.CTkEntry(root)
+
+# Tambahkan tombol
+tombol_hasilkan_invoice = ctk.CTkButton(root, text="Hasilkan Invoice")
+
+# Atur widget
+label_nama.grid(row=0, column=0, padx=10, pady=10)
+entri_nama.grid(row=0, column=1, padx=10, pady=10)
+label_fasilitas.grid(row=1, column=0, padx=10, pady=10)
+combobox_fasilitas.grid(row=1, column=1, padx=10, pady=10)
+label_tanggal_pemesanan.grid(row=2, column=0, padx=10, pady=10)
+entri_tanggal_pemesanan.grid(row=2, column=1, padx=10, pady=10)
+label_jam_pemesanan.grid(row=3, column=0, padx=10, pady=10)
+entri_jam_pemesanan.grid(row=3, column=1, padx=10, pady=10)
+tombol_hasilkan_invoice.grid(row=4, column=0, columnspan=2, padx=10, pady=10)
+
+# Tangani klik tombol
+def hasilkan_invoice():
+    # Ekstrak data dari antarmuka CustomTkinter
+    nama = entri_nama.get()
+    fasilitas_dipilih = combobox_fasilitas.get()
+    tanggal_pemesanan = entri_tanggal_pemesanan.get()
+    jam_pemesanan = entri_jam_pemesanan.get()
+
+    # Buat dokumen Word baru
+    # ... (sisa kode untuk menghasilkan invoice dalam Word)
+
+# Jalankan loop utama
+root.mainloop()

@@ -11,7 +11,7 @@ app = customtkinter.CTk()
 app.geometry("1920x1080")
 app.title('Reservasi Fasilitas')
 
-img1 = ImageTk.PhotoImage(Image.open("assets/pilihanfasilitas.png"))
+img1 = ImageTk.PhotoImage(Image.open("Tugas Besar Reservasi Fasilitas/assets/pilihanfasilitas.png"))
 l1 = customtkinter.CTkLabel(master=app, image=img1, text="")
 l1.pack()
 
@@ -22,7 +22,7 @@ def keluar():
     app.destroy()  # Destroy the current window
     import main_login
 
-imgpopup = Image.open("assets/logo.png")
+imgpopup = Image.open("Tugas Besar Reservasi Fasilitas/assets/logo.png")
 
 btnexit = CTkButton(master=app, text="Kembali", corner_radius=32, fg_color="#222083", hover_color="#C850C0", border_color="#FFCC70", border_width=2, image=CTkImage(dark_image=imgpopup, light_image=imgpopup), bg_color="#3230C0", command=keluar, font=("Arial", 15))
 btnexit.place(relx=0.98, rely=0.07, anchor="se") 
@@ -34,7 +34,7 @@ def show_popup(image_path, description):
     popup.title("Detail Fasilitas")
     popup.resizable(False,False)
 
-    imgpopup = ImageTk.PhotoImage(Image.open("assets/background.png"))
+    imgpopup = ImageTk.PhotoImage(Image.open("Tugas Besar Reservasi Fasilitas/assets/background.png"))
     l1 = customtkinter.CTkLabel(master=popup, image=imgpopup, text="")
     l1.pack()
 
@@ -68,11 +68,11 @@ def show_popup(image_path, description):
     # Keep a reference to prevent garbage collection
     popup.image = img_tk
 
-    img3 = Image.open("assets/logo.png")
+    img3 = Image.open("Tugas Besar Reservasi Fasilitas/assets/logo.png")
 
     def book():
         app.destroy()
-        import calendar_booking
+        import FIX_INI_SUER
 
     btn = CTkButton(master=popup, text="Booking Sekarang", corner_radius=32, fg_color="#222083", hover_color="#C850C0", border_color="#FFCC70", border_width=2, image=CTkImage(dark_image=img3, light_image=img3), font=("Arial", 15), command=book)
     btn.place(relx=0.5, rely=0.85, anchor="n") 
@@ -82,10 +82,10 @@ def show_popup(image_path, description):
 
 # Memuat dan mengatur gambar untuk tombol
 image_paths = [
-    "assets/lapangan.png",  # Ganti dengan path ke gambar Anda
-    "assets/seminar.png",
-    "assets/multimedia.png",
-    "assets/workingspace.png"
+    "Tugas Besar Reservasi Fasilitas/assets/lapangan.png",  # Ganti dengan path ke gambar Anda
+    "Tugas Besar Reservasi Fasilitas/assets/seminar.png",
+    "Tugas Besar Reservasi Fasilitas/assets/multimedia.png",
+    "Tugas Besar Reservasi Fasilitas/assets/workingspace.png"
 ]
 
 descriptions = [

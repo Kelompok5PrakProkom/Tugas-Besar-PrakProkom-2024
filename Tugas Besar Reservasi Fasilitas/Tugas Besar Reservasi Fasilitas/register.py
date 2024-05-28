@@ -40,7 +40,7 @@ app.geometry("1920x1080")
 app.title('Register')
 
 
-img1=ImageTk.PhotoImage(Image.open("assets/pattern.png"))
+img1=ImageTk.PhotoImage(Image.open("Tugas Besar Reservasi Fasilitas/assets/pattern.png"))
 l1=customtkinter.CTkLabel(master=app,image=img1, text = "")
 l1.pack()
 
@@ -68,7 +68,7 @@ def keluar():
     app.destroy()
     import main_login
 
-imgexit = Image.open("assets/logo.png")
+imgexit = Image.open("Tugas Besar Reservasi Fasilitas/assets/logo.png")
 
 btnexit = CTkButton(master=app, text="Kembali", corner_radius=32, fg_color="#222083", hover_color="#C850C0", border_color="#FFCC70", border_width=2, image=CTkImage(dark_image=imgexit, light_image=imgexit), bg_color="#0B0B2C", command=keluar, font=("Arial", 15))
 btnexit.place(relx=0.98, rely=0.07, anchor="se") 
