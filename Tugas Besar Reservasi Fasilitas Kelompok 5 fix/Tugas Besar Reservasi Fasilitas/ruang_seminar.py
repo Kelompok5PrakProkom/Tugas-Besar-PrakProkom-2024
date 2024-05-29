@@ -1,13 +1,17 @@
 import os
 import csv
 import tkinter as tk
-from tkinter import ttk, messagebox
-import ttkbootstrap as ttkb
+from tkinter import messagebox
+from tkcalendar import DateEntry
+import customtkinter as ctk
 from fpdf import FPDF
 from datetime import datetime
-import customtkinter as ctk
-from customtkinter import CTk, CTkButton, CTkToplevel, CTkLabel
 from PIL import ImageTk, Image
+import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+from email.mime.base import MIMEBase
+from email import encoders
 
 ctk.set_appearance_mode("light")
 ctk.set_default_color_theme("dark-blue")
@@ -17,10 +21,10 @@ class BookingApp:
         self.root = root
         self.facility_name = facility_name
         self.root.title(f"Reservasi {facility_name}")
-        self.root.geometry("400x390")
+        self.root.geometry("400x450")
         self.user_email = self.get_user_email()
         self.init_booking_section()
-
+        
     def get_user_email(self):
         try:
             with open('current_user.txt', 'r') as file:
@@ -31,61 +35,61 @@ class BookingApp:
             self.root.destroy()
 
     def init_booking_section(self):
-        booking_frame = ttkb.Frame(self.root)
+        booking_frame = ctk.CTkFrame(self.root)
         booking_frame.pack(padx=10, pady=10, fill='x')
 
-        cal_label = ttk.Label(booking_frame, text="Select Date:", font=('Helvetica', 12))
+        cal_label = ctk.CTkLabel(booking_frame, text="Select Date:", font=('Helvetica', 12))
         cal_label.pack(pady=5)
 
-        self.cal = ttkb.DateEntry(booking_frame, dateformat='%d/%m/%y', bootstyle="primary")
+        self.cal = DateEntry(booking_frame, date_pattern='dd/mm/yy')
         self.cal.pack(padx=40, pady=5)
         self.cal.bind("<<DateEntrySelected>>", self.update_available_times)
 
-        time_label = ttk.Label(booking_frame, text="Select Time:", font=('Helvetica', 12))
+        time_label = ctk.CTkLabel(booking_frame, text="Select Time:", font=('Helvetica', 12))
         time_label.pack(pady=5)
 
         self.time_values = [f"{hour:02d}:00" for hour in range(8, 18)]
-        self.time_combobox = ttk.Combobox(booking_frame, values=self.time_values, state="readonly")
-        self.time_combobox.current(0)
+        self.time_combobox = ctk.CTkComboBox(booking_frame, values=self.time_values)
+        self.time_combobox.set(self.time_values[0])
         self.time_combobox.pack(padx=40, pady=5)
 
-        duration_label = ttk.Label(booking_frame, text="Select Duration (hours):", font=('Helvetica', 12))
+        duration_label = ctk.CTkLabel(booking_frame, text="Select Duration (hours):", font=('Helvetica', 12))
         duration_label.pack(pady=5)
 
         duration_values = [str(i) for i in range(1, 9)]
-        self.duration_combobox = ttk.Combobox(booking_frame, values=duration_values, state="readonly")
-        self.duration_combobox.current(0)
+        self.duration_combobox = ctk.CTkComboBox(booking_frame, values=duration_values)
+        self.duration_combobox.set(duration_values[0])
         self.duration_combobox.pack(padx=40, pady=5)
 
-        btn = ttkb.Button(booking_frame, text="Save Booking", bootstyle="primary-outline", command=self.see_date)
+        btn = ctk.CTkButton(booking_frame, text="Save Booking", command=self.see_date)
         btn.pack(padx=40, pady=10)
 
-        self.date_label = ttk.Label(booking_frame, text="No date selected", font=('Helvetica', 12), foreground='#2a9fd6')
+        self.date_label = ctk.CTkLabel(booking_frame, text="No date selected", font=('Helvetica', 12), text_color='#2a9fd6')
         self.date_label.pack(pady=5)
 
-        name_label = ttk.Label(booking_frame, text="Name:", font=('Helvetica', 12))
+        name_label = ctk.CTkLabel(booking_frame, text="Name:", font=('Helvetica', 12))
         name_label.pack(pady=5)
-        self.entry_name = ttk.Entry(booking_frame, font=('Helvetica', 12))
+        self.entry_name = ctk.CTkEntry(booking_frame, font=('Helvetica', 12))
         self.entry_name.pack(padx=40, pady=5)
 
-        email_label = ttk.Label(booking_frame, text="Email:", font=('Helvetica', 12))
+        email_label = ctk.CTkLabel(booking_frame, text="Email:", font=('Helvetica', 12))
         email_label.pack(pady=5)
-        self.entry_email = ttk.Entry(booking_frame, font=('Helvetica', 12))
+        self.entry_email = ctk.CTkEntry(booking_frame, font=('Helvetica', 12))
         self.entry_email.insert(0, self.user_email)
-        self.entry_email.config(state='readonly')
+        self.entry_email.configure(state='readonly')
         self.entry_email.pack(padx=40, pady=5)
 
         self.update_available_times()
 
     def see_date(self):
-        date = self.cal.entry.get()
+        date = self.cal.get()
         start_time = self.time_combobox.get()
         duration = int(self.duration_combobox.get())
         if self.is_booked(date, start_time, duration):
-            self.date_label.config(text=f"Slot already booked on {date} at {start_time}", foreground='red')
+            self.date_label.configure(text=f"Slot already booked on {date} at {start_time}", text_color='red')
         else:
             booking_info = f"{date} at {start_time} for {duration} hours"
-            self.date_label.config(text=booking_info, foreground='#2a9fd6')
+            self.date_label.configure(text=booking_info, text_color='#2a9fd6')
             self.save_to_csv(date, start_time, duration)
             self.generate_invoice(date, start_time, duration)
             self.update_available_times()
@@ -143,7 +147,8 @@ class BookingApp:
             f"Waktu     : {start_time}\n"
             f"Durasi     : {duration} jam\n"
         )
-        self.save_invoice(invoice_text, name, date)
+        invoice_filename = self.save_invoice(invoice_text, name, date)
+        self.send_email_with_invoice(email, invoice_filename)
 
     def save_invoice(self, text, name, date):
         filename = f"Invoice_{name}_{date.replace('/', '-')}.pdf"
@@ -154,9 +159,47 @@ class BookingApp:
             pdf.cell(200, 10, txt=line, ln=True, align='L')
         pdf.output(filename)
         messagebox.showinfo("Invoice Generated", f"Invoice saved as {filename}")
+        return filename
+
+    def send_email_with_invoice(self, recipient_email, invoice_filename):
+        sender_email = "kelompok5prakprokom@gmail.com"
+        sender_password = "tvsh fnti qfgt eieq"
+
+        subject = "Invoice Reservasi Ruang Seminar"
+        body = "Berikut ini kami kirimkan invoice reservasi fasilitas ruang seminar yang telah anda pesan."
+
+        # Create the email message
+        msg = MIMEMultipart()
+        msg['From'] = sender_email
+        msg['To'] = recipient_email
+        msg['Subject'] = subject
+        msg.attach(MIMEText(body, 'plain'))
+
+        # Attach the PDF file
+        with open(invoice_filename, "rb") as attachment:
+            part = MIMEBase('application', 'octet-stream')
+            part.set_payload(attachment.read())
+        encoders.encode_base64(part)
+        part.add_header(
+            'Content-Disposition',
+            f'attachment; filename={invoice_filename}',
+        )
+        msg.attach(part)
+
+        # Send the email
+        try:
+            server = smtplib.SMTP('smtp.gmail.com', 587)
+            server.starttls()
+            server.login(sender_email, sender_password)
+            text = msg.as_string()
+            server.sendmail(sender_email, recipient_email, text)
+            server.quit()
+            messagebox.showinfo("Email Sent", f"Invoice emailed to {recipient_email}")
+        except Exception as e:
+            messagebox.showerror("Error", f"Failed to send email: {str(e)}")
 
     def update_available_times(self, event=None):
-        date = self.cal.entry.get()
+        date = self.cal.get()
         unavailable_times = set()
         
         file_path = f'{self.facility_name}_booking_data.csv'
@@ -179,13 +222,13 @@ class BookingApp:
             else:
                 updated_time_values.append(time)
         
-        self.time_combobox.config(values=updated_time_values)
-        self.time_combobox.current(0)
+        self.time_combobox.configure(values=updated_time_values)
+        self.time_combobox.set(updated_time_values[0])
 
 
 def start_app():
-    app = CTk()
-    BookingApp(app, "Ruang Multimedia")  
+    app = ctk.CTk()
+    BookingApp(app, "Ruang Seminar")  
     app.mainloop()
 
 if __name__ == "__main__":
