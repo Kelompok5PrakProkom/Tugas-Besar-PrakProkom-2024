@@ -29,7 +29,9 @@ def jalan_book():
 
     def keluar():
         app.destroy()  # Destroy the current window
-        import main_login
+        import main_login as ml
+        ml.login_main()
+        return
 
     def balik():
         app.destroy()

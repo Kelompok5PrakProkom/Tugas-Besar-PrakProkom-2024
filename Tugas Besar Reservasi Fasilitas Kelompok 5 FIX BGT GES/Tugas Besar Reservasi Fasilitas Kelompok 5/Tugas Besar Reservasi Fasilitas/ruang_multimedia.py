@@ -12,6 +12,7 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.mime.base import MIMEBase
 from email import encoders
+import subprocess
 
 ctk.set_appearance_mode("light")
 ctk.set_default_color_theme("dark-blue")
@@ -170,10 +171,10 @@ def save_invoice(text, name, date):
     text_y = border_y + 2
     justify_text(pdf, text, text_x, text_y, text_width - 4)
 
-    if os.path.exists('Tugas Besar Reservasi Fasilitas/assets/logo.png'):
+    if os.path.exists('Tugas Besar Reservasi Fasilitas Kelompok 5/Tugas Besar Reservasi Fasilitas/assets/logo.png'):
         logo_width = 35
         logo_x = (page_width - logo_width) / 2
-        pdf.image('Tugas Besar Reservasi Fasilitas/assets/logo.png', x=logo_x, y=border_y + text_height + 10, w=logo_width)
+        pdf.image('Tugas Besar Reservasi Fasilitas Kelompok 5/Tugas Besar Reservasi Fasilitas/assets/logo.png', x=logo_x, y=border_y + text_height + 10, w=logo_width)
 
     pdf.output(filename)
     messagebox.showinfo("Invoice Generated", f"Invoice saved as {filename}")
@@ -241,12 +242,19 @@ def see_date():
             entry_name.get(),
             date
         )
+        # Open the PDF file
+        subprocess.Popen([invoice_filename], shell=True)
+        
+        # Send the email
         send_email_with_invoice(user_email, invoice_filename)
+        
+        # Update available times
         update_available_times()
 
 def balikmilih():
     app.destroy()
-    import book_fasilitas
+    import book_fasilitas as bf
+    bf.jalan_book()
     return
 
 user_email = get_user_email()
@@ -306,7 +314,12 @@ canvas.create_window(960, 450, anchor='center', window=cal_label)
 cal = DateEntry(
     app, 
     date_pattern='dd/mm/yy',
-    font = ('Helvetica',14))
+    font = ('Helvetica',14),
+    showweeknumbers=False,
+    showothermonthdays=False,
+    background="pink",
+    foreground="#272F37",
+    weekendforeground="brown")
 canvas.create_window(960, 490, anchor='center', window=cal)
 cal.bind("<<DateEntrySelected>>", update_available_times)
 
