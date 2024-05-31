@@ -37,6 +37,11 @@ def register_akun():
         else:
             messagebox.showerror("Error", "Password tidak sama!")
 
+    def keluar():
+        app.destroy()
+        import main_login as ml
+        ml.login_main()
+        return
 
     app = customtkinter.CTk()  #creating cutstom tkinter window
     app.attributes("-fullscreen",True)
@@ -101,11 +106,6 @@ def register_akun():
         corner_radius=6)
     button1.place(x=75, y=300)
 
-    def keluar():
-        app.destroy()
-        import main_login as ml
-        ml.login_main()
-        return
 
     imgexit = Image.open("Tugas Besar Reservasi Fasilitas Kelompok 5/Tugas Besar Reservasi Fasilitas/assets/logo.png")
 

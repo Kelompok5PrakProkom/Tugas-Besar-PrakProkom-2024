@@ -41,8 +41,12 @@ def login_main():
         import register as rg # Assuming register.py handles user registration
         rg.register_akun()
         return
+    
+    def keluar():
+        app.quit()
 
-    img1 = ImageTk.PhotoImage(Image.open("Tugas Besar Reservasi Fasilitas Kelompok 5/Tugas Besar Reservasi Fasilitas/assets/bgbgt.png"))
+    img1 = ImageTk.PhotoImage(Image.open(
+        "Tugas Besar Reservasi Fasilitas Kelompok 5/Tugas Besar Reservasi Fasilitas/assets/bgbgt.png"))
     l1 = customtkinter.CTkLabel(
         master=app, 
         image=img1, 
@@ -103,9 +107,6 @@ def login_main():
         command=button_function, 
         corner_radius=6)
     button1.place(x=75, y=300)
-
-    def keluar():
-        app.quit()
 
     imgexit = Image.open("Tugas Besar Reservasi Fasilitas Kelompok 5/Tugas Besar Reservasi Fasilitas/assets/logo.png")
 
